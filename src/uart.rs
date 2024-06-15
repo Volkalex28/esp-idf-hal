@@ -1897,16 +1897,8 @@ fn new_common<UART: Uart>(
     esp!(unsafe {
         uart_driver_install(
             UART::port(),
-            if rx.is_some() {
-                config.rx_fifo_size as _
-            } else {
-                0
-            },
-            if tx.is_some() {
-                config.tx_fifo_size as _
-            } else {
-                0
-            },
+            if rx.is_some() { config.rx_fifo_size } else { UART_FIFO_SIZE * 2 } as _,
+            if tx.is_some() { config.tx_fifo_size } else { UART_FIFO_SIZE * 2 } as _,
             config.queue_size as _,
             queue.map(|q| q as *mut _).unwrap_or(ptr::null_mut()),
             InterruptType::to_native(config.intr_flags) as i32,
